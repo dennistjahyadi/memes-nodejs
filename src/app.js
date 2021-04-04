@@ -12,7 +12,7 @@ app.use('/api/v1', protection, routes)
 
 try {
   app.listen(3000, () => {
-    console.log(`REST API on http://localhost:${process.env.PORT}/api`);
+    console.log(`REST API on http://localhost:${process.env.PORT}/api/v1`);
   });
 } catch (e) {
   console.error(e);

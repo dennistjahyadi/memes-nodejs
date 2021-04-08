@@ -4,8 +4,7 @@ const fetchMemes = async (req, res) => {
   var limit = req.query.limit;
   var offset = req.query.offset;
   var userId = req.query.user_id;
-  if (limit) limit = parseInt(limit);
-  else limit = 20;
+  if (!limit) limit = 20
 
   if (!userId) userId = -1;
   if (!offset) offset = 0;
@@ -58,9 +57,15 @@ const fetchMemes = async (req, res) => {
         "is_liked",
       ],
     ],
-    limit: limit,
-    offset: offset,
+    limit: parseInt(limit),
+    offset: parseInt(offset),
   });
+
+  memes.forEach((meme)=>{
+    meme.images = JSON.parse(meme.images)
+    meme.tags = JSON.parse(meme.tags)
+  })
+
   const result = {
     "memes": memes
   }

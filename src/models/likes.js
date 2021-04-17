@@ -1,5 +1,7 @@
 "use strict";
 const { Model } = require("sequelize");
+const MemesModel = require("../models/memes");
+
 module.exports = (sequelize, DataTypes) => {
   class Likes extends Model {
     /**
@@ -15,11 +17,13 @@ module.exports = (sequelize, DataTypes) => {
     {
       meme_id: DataTypes.BIGINT,
       user_id: DataTypes.BIGINT,
-      like: DataTypes.TINYINT,
+      like: DataTypes.TINYINT
     },
     {
       sequelize,
       modelName: "Likes",
+      createdAt: "created_at",
+      updatedAt: "updated_at",
     }
   );
   return Likes;

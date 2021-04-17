@@ -35,6 +35,8 @@ const Sections = SectionsModel(sequelize, Sequelize);
 const Tags = TagsModel(sequelize, Sequelize);
 const Users = UsersModel(sequelize, Sequelize);
 
+Memes.hasMany(Likes, {foreignKey: "meme_id"})
+
 module.exports = {
   sequelize,
   Memes,

@@ -1,7 +1,11 @@
 
 const express = require("express");
 const { date } = require("joi");
-const { fetchMemes } = require('../controllers/memes-controller')
+const { fetchMemes, fetchLikedMemes } = require('../controllers/memes-controller')
+const { fetchSections } = require('../controllers/section-controller')
+const { fetchComments, insertComments } = require('../controllers/comments-controller')
+const { insertLikes } = require('../controllers/likes-controller')
+
 const { crypt, decrypt, validateToken } = require('../utils/crypt')
 const router = express.Router()
 require("dotenv").config();
@@ -40,6 +44,10 @@ router.get("/validate",(req, resp) => {
 })
 
 router.get("/fetch-memes", fetchMemes);
-
+router.get("/fetch-sections", fetchSections);
+router.get("/fetch-liked-memes", fetchLikedMemes);
+router.get("/fetch-comments", fetchComments);
+router.post("/insert-likes", insertLikes);
+router.post("/insert-comments", insertComments);
 
 module.exports = router

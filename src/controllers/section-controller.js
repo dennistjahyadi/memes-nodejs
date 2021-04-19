@@ -11,7 +11,7 @@ const fetchSections = async (req, res) => {
 
   var where = {}
 
-  if(filter) where['name'] = filter
+  if(filter) where['name'] = {[Op.like]: `%${filter}%`}
 
   const sections = await Sections.findAll({
     limit: parseInt(limit),

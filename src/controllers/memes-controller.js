@@ -1,15 +1,22 @@
 const { Memes, Likes, sequelize } = require("../utils/db");
-
+const { Sequelize } = require("sequelize");
+const Op = Sequelize.Op
 const fetchMemes = async (req, res) => {
   var limit = req.query.limit;
   var offset = req.query.offset;
   var userId = req.query.user_id;
+  var postSection = req.query.post_section
   if (!limit) limit = 20
 
   if (!userId) userId = -1;
   if (!offset) offset = 0;
 
+  var where = {}
+  if(postSection) where['post_section'] = {[Op.like]: `%${postSection}%`}
+
   const memes = await Memes.findAll({
+    where
+    ,
     attributes: [
       "id",
       "code",

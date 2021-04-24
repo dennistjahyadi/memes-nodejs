@@ -1,14 +1,17 @@
 const { Users } = require("../utils/db");
+const { Sequelize } = require("sequelize");
+const Op = Sequelize.Op
 
 const login = async (req, res) => {
   var email = req.body.email;
 
-  const user = await Users.findOrCreate({
+  const users = await Users.findOrCreate({
       where: {email: email}
   })
 
   const result = {
-    "user": user
+    'status': 'OK',
+    "user": users[0]
   }
 
   return res.send(result);
@@ -18,26 +21,51 @@ const updateUsername = async (req, res) => {
     
     var userId = req.body.user_id;
     var username = req.body.username;
-
     if(username.length <= 4){
-        res.statusCode = 400
-        return res.send("Username at least 5 character long")
+        const result = {
+            'status': 'ERROR',
+            "message": "Username at least 5 character long"
+        }
+        return res.send(result)
     }
 
     var regex = /^\w{1,}$/
-    var matches = regex.test(text);
+    var matches = regex.test(username);
     if(!matches){
-        res.statusCode = 400
-        return res.send("Username cannot include special characters or space")
+        const result = {
+            'status': 'ERROR',
+            "message": "Username cannot include special characters or space"
+        }
+        return res.send(result)
+    }
+    console.log(userId)
+    const count = await Users.count({
+      where: {
+        username: username,
+        id: {[Op.ne]: userId}
+      }
+    })
+
+    if(count>0){
+      const result = {
+        'status': 'ERROR',
+        "message": "Username not available"
+      }
+      return res.send(result)
     }
 
-    const user = await Users.update({ username }, {
+    await Users.update({ username }, {
         where: {
           id: userId
         }
       });
+
+    const user = await Users.findOne({
+      where: {id: userId}
+    })
     
     const result = {
+        'status': 'OK',
         "user": user
     }
     return res.send(result); 

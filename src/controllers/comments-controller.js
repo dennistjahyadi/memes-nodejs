@@ -48,6 +48,7 @@ const insertComments = async (req, res) => {
     const comments = await Comments.create({...param});
 
     const result = {
+        'status': 'OK',
         'result': 1,
         'data': comments
     }

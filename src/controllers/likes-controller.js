@@ -28,6 +28,7 @@ const insertLikes = async (req, res) => {
         }
     })
     const result = {
+        'status': 'OK',
         'data': likes,
         'total_like': totalLike
     }

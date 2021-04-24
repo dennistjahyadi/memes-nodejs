@@ -67,6 +67,7 @@ const fetchMemes = async (req, res) => {
   })
 
   const result = {
+    'status': 'OK',
     "memes": memes
   }
 

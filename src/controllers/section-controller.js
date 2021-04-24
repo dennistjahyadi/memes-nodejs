@@ -20,6 +20,7 @@ const fetchSections = async (req, res) => {
   });
 
   const result = {
+    'status': 'OK',
     "sections": sections
   }
 

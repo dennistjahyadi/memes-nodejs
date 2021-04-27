@@ -38,7 +38,7 @@ const updateUsername = async (req, res) => {
         }
         return res.send(result)
     }
-    console.log(userId)
+
     const count = await Users.count({
       where: {
         username: username,
@@ -71,4 +71,25 @@ const updateUsername = async (req, res) => {
     return res.send(result); 
 }
 
-module.exports = { login, updateUsername };
+const updateProfilepic = async (req, res) => {
+  var userId = req.body.user_id;
+  var photo_url = req.body.url;
+
+  await Users.update({ photo_url }, {
+    where: {
+      id: userId
+    }
+  });
+
+  const user = await Users.findOne({
+    where: {id: userId}
+  })
+
+  const result = {
+    'status': 'OK',
+    "user": user
+  }
+  return res.send(result);
+}
+
+module.exports = { login, updateUsername, updateProfilepic };

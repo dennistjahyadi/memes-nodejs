@@ -25,6 +25,7 @@ const fetchComments = async (req, res) => {
     })
 
     const result = {
+        'status': 'OK',
         "comments": comments
     }
     return res.send(result);

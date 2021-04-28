@@ -139,6 +139,7 @@ const fetchLikedMemes = async (req, res) => {
   })
 
   const result = {
+    'status': 'OK',
     "memes": memes
   }
 

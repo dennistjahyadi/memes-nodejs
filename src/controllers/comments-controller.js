@@ -12,10 +12,9 @@ const fetchComments = async (req, res) => {
     var where = {}
     if(userId){
         where['user_id'] = userId
-    }else if(memeId){
+    }
+    if(memeId){
         where['meme_id'] = memeId
-    }else{
-        where['user_id'] = -1
     }
 
     const comments = await Comments.findAll({

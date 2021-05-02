@@ -48,7 +48,13 @@ const insertComments = async (req, res) => {
     const userId = req.body.user_id
     const messages = req.body.messages
     const commentId = req.body.comment_id
-    if(!memeId || !userId || !messages) res.send({})
+    if(!memeId || !userId || !messages) {
+        const result = {
+            'status': 'ERROR',
+            "message": "wrong param"
+        }
+        return res.send(result);
+    }
 
     var param = {}
     param['user_id'] = userId

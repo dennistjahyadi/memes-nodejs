@@ -1,4 +1,5 @@
-const { Comments } = require("../utils/db");
+const { Comments, sequelize } = require("../utils/db");
+const dateFormat = require('dateformat');
 
 const fetchComments = async (req, res) => {
     var limit = req.query.limit;
@@ -18,16 +19,22 @@ const fetchComments = async (req, res) => {
     }
 
     const comments = await Comments.findAll({
+        attributes: [
+            "id",
+            "meme_id",
+            "user_id",
+            "messages",
+            "comment_id",
+            [sequelize.fn('date_format', sequelize.col('created_at'), '%Y-%m-%d %H:%i:%S'), 'created_at'],
+            [sequelize.fn('date_format', sequelize.col('updated_at'), '%Y-%m-%d %H:%i:%S'), 'updated_at']       
+        ],
         where,
         limit: parseInt(limit),
         offset: parseInt(offset),
     })
 
-    var dateNow = new Date().format("dd/MM/yyyy hh:mm:ss");
+    var dateNow = dateFormat(new Date(), "yyyy-mm-dd h:MM:ss");
 
-    comments.forEach((comm)=>{
-        comm.current_datetime = dateNow
-      })
     const result = {
         'status': 'OK',
         'current_datetime': dateNow,

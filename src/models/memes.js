@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   Memes.init(
     {
+      user_id: DataTypes.BIGINT,
       code: DataTypes.STRING,
       title: DataTypes.TEXT,
       type: DataTypes.STRING,

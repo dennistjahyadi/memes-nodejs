@@ -8,6 +8,15 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.BIGINT
       },
+      user_id: {
+        type: Sequelize.BIGINT,
+        references: {
+          model: 'Users', 
+          key: 'id', // key in Target model that we're referencing
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
+      },
       username: {
         type: Sequelize.STRING,
         unique: true

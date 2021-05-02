@@ -23,8 +23,14 @@ const fetchComments = async (req, res) => {
         offset: parseInt(offset),
     })
 
+    var dateNow = new Date().format("dd/MM/yyyy hh:mm:ss");
+
+    comments.forEach((comm)=>{
+        comm.current_datetime = dateNow
+      })
     const result = {
         'status': 'OK',
+        'current_datetime': dateNow,
         "comments": comments
     }
     return res.send(result);

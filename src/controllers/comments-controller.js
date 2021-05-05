@@ -6,9 +6,12 @@ const fetchComments = async (req, res) => {
     var offset = req.query.offset;
     var userId = req.query.user_id;
     var memeId = req.query.meme_id;
+    var sort = req.query.sort
     if (!limit) limit = 20
 
     if (!offset) offset = 0;
+
+    if (!sort) sort = "asc";
 
     var where = {}
     if(userId){
@@ -31,6 +34,9 @@ const fetchComments = async (req, res) => {
         where,
         limit: parseInt(limit),
         offset: parseInt(offset),
+        order: [
+            ['id', sort]
+        ]
     })
 
     var dateNow = dateFormat(new Date(), "yyyy-mm-dd h:MM:ss");

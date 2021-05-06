@@ -1,4 +1,4 @@
-const { Comments, sequelize } = require("../utils/db");
+const { Comments,Users, sequelize } = require("../utils/db");
 const dateFormat = require('dateformat');
 
 const fetchComments = async (req, res) => {
@@ -28,9 +28,14 @@ const fetchComments = async (req, res) => {
             "user_id",
             "messages",
             "comment_id",
-            [sequelize.fn('date_format', sequelize.col('created_at'), '%Y-%m-%d %H:%i:%S'), 'created_at'],
-            [sequelize.fn('date_format', sequelize.col('updated_at'), '%Y-%m-%d %H:%i:%S'), 'updated_at']       
+            [sequelize.fn('date_format', sequelize.col('comments.created_at'), '%Y-%m-%d %H:%i:%S'), 'created_at'],
+            [sequelize.fn('date_format', sequelize.col('comments.updated_at'), '%Y-%m-%d %H:%i:%S'), 'updated_at']       
         ],
+        include: [{
+            model: Users, 
+            required: true, 
+            as: 'user'
+          }],
         where,
         limit: parseInt(limit),
         offset: parseInt(offset),

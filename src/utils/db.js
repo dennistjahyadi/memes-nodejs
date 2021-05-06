@@ -36,6 +36,7 @@ const Tags = TagsModel(sequelize, Sequelize);
 const Users = UsersModel(sequelize, Sequelize);
 
 Memes.hasMany(Likes, {foreignKey: "meme_id"})
+Comments.belongsTo(Users, {as: 'user', foreignKey: "user_id"})
 
 module.exports = {
   sequelize,

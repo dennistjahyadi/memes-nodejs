@@ -5,6 +5,7 @@ const fetchComments = async (req, res) => {
     var offset = req.query.offset;
     var userId = req.query.user_id;
     var memeId = req.query.meme_id;
+    var commentId = req.query.comment_id;
     if (!limit) limit = 20
 
     if (!offset) offset = 0;
@@ -15,6 +16,9 @@ const fetchComments = async (req, res) => {
     }
     if(memeId){
         where['meme_id'] = memeId
+    }
+    if(commentId){
+        where['comment_id'] = commentId
     }
 
     const comments = await Comments.findAll({

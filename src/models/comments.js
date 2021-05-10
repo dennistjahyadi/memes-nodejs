@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       meme_id: DataTypes.BIGINT,
       user_id: DataTypes.BIGINT,
       messages: DataTypes.TEXT,
-      comment_id: DataTypes.BIGINT,
+      comment_id: DataTypes.BIGINT
     },
     {
       sequelize,

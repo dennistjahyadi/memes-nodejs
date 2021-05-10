@@ -1,4 +1,5 @@
-const { Comments } = require("../utils/db");
+const { Comments,Users, sequelize } = require("../utils/db");
+const dateFormat = require('dateformat');
 
 const fetchComments = async (req, res) => {
     var limit = req.query.limit;
@@ -6,9 +7,13 @@ const fetchComments = async (req, res) => {
     var userId = req.query.user_id;
     var memeId = req.query.meme_id;
     var commentId = req.query.comment_id;
+    var sort = req.query.sort
+
     if (!limit) limit = 20
 
     if (!offset) offset = 0;
+
+    if (!sort) sort = "asc";
 
     var where = {}
     if(userId){
@@ -22,13 +27,33 @@ const fetchComments = async (req, res) => {
     }
 
     const comments = await Comments.findAll({
+        attributes: [
+            "id",
+            "meme_id",
+            "user_id",
+            "messages",
+            "comment_id",
+            [sequelize.fn('date_format', sequelize.col('comments.created_at'), '%Y-%m-%d %H:%i:%S'), 'created_at'],
+            [sequelize.fn('date_format', sequelize.col('comments.updated_at'), '%Y-%m-%d %H:%i:%S'), 'updated_at']       
+        ],
+        include: [{
+            model: Users, 
+            required: true, 
+            as: 'user'
+          }],
         where,
         limit: parseInt(limit),
         offset: parseInt(offset),
+        order: [
+            ['id', sort]
+        ]
     })
+
+    var dateNow = dateFormat(new Date(), "yyyy-mm-dd h:MM:ss");
 
     const result = {
         'status': 'OK',
+        'current_datetime': dateNow,
         "comments": comments
     }
     return res.send(result);
@@ -39,7 +64,21 @@ const insertComments = async (req, res) => {
     const userId = req.body.user_id
     const messages = req.body.messages
     const commentId = req.body.comment_id
-    if(!memeId || !userId || !messages) res.send({})
+    if(!memeId || !userId) {
+        const result = {
+            'status': 'ERROR',
+            "message": "wrong param"
+        }
+        return res.send(result);
+    }
+
+    if(!(messages && messages.trim().length>0)) {
+        const result = {
+            'status': 'ERROR',
+            "message": "Messages cannot be empty bruuh!!"
+        }
+        return res.send(result);
+    }
 
     var param = {}
     param['user_id'] = userId

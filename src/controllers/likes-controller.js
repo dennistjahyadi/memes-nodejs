@@ -3,8 +3,14 @@ const { Likes, sequelize } = require("../utils/db");
 const insertLikes = async (req, res) => {
     var userId = req.body.user_id;
     var memeId = req.body.meme_id;
-    var liked = req.body.like;
-    if(!userId || !memeId || liked==null) return res.send({});
+    var liked = req.body.liked;
+    if(!userId || !memeId || liked==null){
+        const result = {
+            'status': 'ERROR',
+            "message": "wrong param"
+        }
+        return res.send(result);
+    } 
 
     var totalLike = await Likes.count({
         where: {

@@ -1,4 +1,4 @@
-const { Comments,Users, sequelize } = require("../utils/db");
+const { Comments, Users, sequelize } = require("../utils/db");
 const dateFormat = require('dateformat');
 
 const fetchComments = async (req, res) => {

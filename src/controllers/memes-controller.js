@@ -1,22 +1,21 @@
 const { Memes, Likes, sequelize } = require("../utils/db");
 const { Sequelize } = require("sequelize");
-const Op = Sequelize.Op
+const Op = Sequelize.Op;
 const fetchMemes = async (req, res) => {
   var limit = req.query.limit;
   var offset = req.query.offset;
   var userId = req.query.user_id;
-  var postSection = req.query.post_section
-  if (!limit) limit = 20
+  var postSection = req.query.post_section;
+  if (!limit) limit = 20;
 
   if (!userId) userId = -1;
   if (!offset) offset = 0;
 
-  var where = {}
-  if(postSection) where['post_section'] = {[Op.like]: `%${postSection}%`}
+  var where = {};
+  if (postSection) where["post_section"] = { [Op.like]: `%${postSection}%` };
 
   const memes = await Memes.findAll({
-    where
-    ,
+    where,
     attributes: [
       "id",
       "code",
@@ -59,17 +58,18 @@ const fetchMemes = async (req, res) => {
     ],
     limit: parseInt(limit),
     offset: parseInt(offset),
+    order: [["id", "desc"]]
   });
 
-  memes.forEach((meme)=>{
-    meme.images = JSON.parse(meme.images)
-    meme.tags = JSON.parse(meme.tags)
-  })
+  memes.forEach((meme) => {
+    meme.images = JSON.parse(meme.images);
+    meme.tags = JSON.parse(meme.tags);
+  });
 
   const result = {
-    'status': 'OK',
-    "memes": memes
-  }
+    status: "OK",
+    memes: memes,
+  };
 
   return res.send(result);
 };
@@ -78,7 +78,7 @@ const fetchLikedMemes = async (req, res) => {
   var limit = req.query.limit;
   var offset = req.query.offset;
   var userId = req.query.user_id;
-  if (!limit) limit = 20
+  if (!limit) limit = 20;
 
   if (!userId) userId = -1;
   if (!offset) offset = 0;
@@ -124,45 +124,47 @@ const fetchLikedMemes = async (req, res) => {
         "is_liked",
       ],
     ],
-    include: [{
+    include: [
+      {
         model: Likes,
         where: { like: 1, user_id: userId },
-        required: true
-    }],
+        required: true,
+        order: [["id", "desc"]]
+      },
+    ],
     limit: parseInt(limit),
     offset: parseInt(offset),
   });
 
-  memes.forEach((meme)=>{
-    meme.images = JSON.parse(meme.images)
-    meme.tags = JSON.parse(meme.tags)
-  })
+  memes.forEach((meme) => {
+    meme.images = JSON.parse(meme.images);
+    meme.tags = JSON.parse(meme.tags);
+  });
 
   const result = {
-    'status': 'OK',
-    "memes": memes
-  }
+    status: "OK",
+    memes: memes,
+  };
 
   return res.send(result);
-}
+};
 
 const fetchMyMemes = async (req, res) => {
   var limit = req.query.limit;
   var offset = req.query.offset;
   var userId = req.query.user_id;
-  var postSection = req.query.post_section
-  if (!limit) limit = 20
+  var postSection = req.query.post_section;
+  if (!limit) limit = 20;
 
   if (!userId) userId = -1;
   if (!offset) offset = 0;
 
-  var where = {}
-  if(postSection) where['post_section'] = {[Op.like]: `%${postSection}%`}
-  where['user_id'] = userId
+  var where = {};
+  if (postSection) where["post_section"] = { [Op.like]: `%${postSection}%` };
+  where["user_id"] = userId;
 
   const memes = await Memes.findAll({
-    where
-    ,
+    where,
     attributes: [
       "id",
       "code",
@@ -205,19 +207,58 @@ const fetchMyMemes = async (req, res) => {
     ],
     limit: parseInt(limit),
     offset: parseInt(offset),
+    order: [["id", "desc"]]
   });
 
-  memes.forEach((meme)=>{
-    meme.images = JSON.parse(meme.images)
-    meme.tags = JSON.parse(meme.tags)
-  })
+  memes.forEach((meme) => {
+    meme.images = JSON.parse(meme.images);
+    meme.tags = JSON.parse(meme.tags);
+  });
 
   const result = {
-    'status': 'OK',
-    "memes": memes
-  }
+    status: "OK",
+    memes: memes,
+  };
 
   return res.send(result);
 };
 
-module.exports = { fetchMemes, fetchLikedMemes, fetchMyMemes };
+const insertMemes = async (req, res) => {
+  var user_id = req.body.user_id;
+  var code = Date.now();
+  var title = req.body.desc;
+  var isPhoto = req.body.is_photo;
+  var type = isPhoto ? "Photo" : "Animated";
+  var images = req.body.data;
+  var tags = "[]";
+  var post_section = req.body.post_section;
+  if (!user_id || isPhoto == null || !images || !post_section) {
+    const result = {
+      status: "ERROR",
+      message: "wrong param",
+    };
+    return res.send(result);
+  }
+
+  const meme = await Memes.create({
+    user_id,
+    code,
+    title,
+    type,
+    images,
+    tags,
+    post_section,
+  });
+
+  meme.images = JSON.parse(meme.images);
+  meme.tags = JSON.parse(meme.tags);
+
+  const result = {
+    status: "OK",
+    data: meme,
+  };
+
+  return res.send(result);
+};
+
+module.exports = { fetchMemes, fetchLikedMemes, fetchMyMemes, insertMemes };

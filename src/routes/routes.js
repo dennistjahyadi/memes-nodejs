@@ -1,7 +1,7 @@
 
 const express = require("express");
 const { date } = require("joi");
-const { fetchMemes, fetchLikedMemes, fetchMyMemes } = require('../controllers/memes-controller')
+const { fetchMemes, fetchLikedMemes, fetchMyMemes, insertMemes } = require('../controllers/memes-controller')
 const { fetchSections } = require('../controllers/section-controller')
 const { fetchMainComments, fetchComments, insertComments } = require('../controllers/comments-controller')
 const { insertLikes } = require('../controllers/likes-controller')
@@ -55,6 +55,6 @@ router.post("/insert-comments", insertComments);
 router.post("/login", login);
 router.post("/update-username", updateUsername);
 router.post("/update-profile-pic", updateProfilepic);
-
+router.post("/insert-memes", insertMemes);
 
 module.exports = router

@@ -1,4 +1,4 @@
-const { Memes, Likes, sequelize } = require("../utils/db");
+const { Memes, Likes, Sections, sequelize } = require("../utils/db");
 const { Sequelize } = require("sequelize");
 const Op = Sequelize.Op;
 const fetchMemes = async (req, res) => {
@@ -58,7 +58,7 @@ const fetchMemes = async (req, res) => {
     ],
     limit: parseInt(limit),
     offset: parseInt(offset),
-    order: [["id", "desc"]]
+    order: [["id", "desc"]],
   });
 
   memes.forEach((meme) => {
@@ -129,7 +129,7 @@ const fetchLikedMemes = async (req, res) => {
         model: Likes,
         where: { like: 1, user_id: userId },
         required: true,
-        order: [["id", "desc"]]
+        order: [["id", "desc"]],
       },
     ],
     limit: parseInt(limit),
@@ -207,7 +207,7 @@ const fetchMyMemes = async (req, res) => {
     ],
     limit: parseInt(limit),
     offset: parseInt(offset),
-    order: [["id", "desc"]]
+    order: [["id", "desc"]],
   });
 
   memes.forEach((meme) => {
@@ -238,6 +238,16 @@ const insertMemes = async (req, res) => {
       message: "wrong param",
     };
     return res.send(result);
+  }
+
+  const totalSection = await Sections.count({
+    where: { name: { [Op.like]: post_section } },
+  });
+
+  if (totalSection == 0) {
+    await Sections.create({
+      name: post_section,
+    });
   }
 
   const meme = await Memes.create({

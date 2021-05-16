@@ -5,6 +5,7 @@ const LikesModel = require("../models/likes");
 const SectionsModel = require("../models/sections");
 const TagsModel = require("../models/tags");
 const UsersModel = require("../models/users");
+const FollowingsModel = require("../models/followings");
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -34,11 +35,15 @@ const Likes = LikesModel(sequelize, Sequelize);
 const Sections = SectionsModel(sequelize, Sequelize);
 const Tags = TagsModel(sequelize, Sequelize);
 const Users = UsersModel(sequelize, Sequelize);
+const Followings = FollowingsModel(sequelize, Sequelize);
 
 Memes.hasMany(Likes, {foreignKey: "meme_id"})
 Memes.belongsTo(Users, {as: 'user', foreignKey: "user_id"})
 Comments.belongsTo(Users, {as: 'user', foreignKey: "user_id"})
 Comments.hasMany(Comments, {as: 'subcomments', foreignKey: "comment_id"})
+Users.hasMany(Memes, {as: 'memes', foreignKey: "user_id"})
+Followings.hasMany(Users, {as: 'following_user', foreignKey: "following_user_id"})
+Followings.hasMany(Users, {as: 'follower_user', foreignKey: "user_id"})
 
 module.exports = {
   sequelize,

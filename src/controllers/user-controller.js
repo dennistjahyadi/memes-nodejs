@@ -1,4 +1,4 @@
-const { Users } = require("../utils/db");
+const { Users, Memes } = require("../utils/db");
 const { Sequelize } = require("sequelize");
 const Op = Sequelize.Op
 
@@ -92,4 +92,25 @@ const updateProfilepic = async (req, res) => {
   return res.send(result);
 }
 
-module.exports = { login, updateUsername, updateProfilepic };
+const getUser = async (req, res) => {
+  var userId = req.query.user_id;
+
+  const user = await Users.findOne({
+    where: {id: userId},
+    include: [
+      {
+        model: Memes,
+        required: true,
+        as: "memes",
+      },
+    ],
+  })
+
+  const result = {
+    'status': 'OK',
+    "user": user
+  }
+  return res.send(result)
+}
+
+module.exports = { login, updateUsername, updateProfilepic, getUser };

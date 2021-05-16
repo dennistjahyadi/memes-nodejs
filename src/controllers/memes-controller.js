@@ -1,4 +1,4 @@
-const { Memes, Likes, Sections, sequelize } = require("../utils/db");
+const { Memes, Likes, Sections, Users, sequelize } = require("../utils/db");
 const { Sequelize } = require("sequelize");
 const Op = Sequelize.Op;
 const fetchMemes = async (req, res) => {
@@ -55,6 +55,13 @@ const fetchMemes = async (req, res) => {
           )`),
         "is_liked",
       ],
+    ],
+    include: [
+      {
+        model: Users,
+        required: false,
+        as: "user",
+      },
     ],
     limit: parseInt(limit),
     offset: parseInt(offset),

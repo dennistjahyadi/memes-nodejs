@@ -1,4 +1,4 @@
-const { Users, Memes } = require("../utils/db");
+const { Users, Memes, Followings } = require("../utils/db");
 const { Sequelize } = require("sequelize");
 const Op = Sequelize.Op
 
@@ -100,11 +100,26 @@ const getUser = async (req, res) => {
     include: [
       {
         model: Memes,
-        required: true,
+        required: false,
         as: "memes",
       },
+      {
+        model: Followings,
+        required: false,
+        as: "following_user",
+      },
+      {
+        model: Followings,
+        required: false,
+        as: "follower_user",
+      }
     ],
   })
+
+  user.memes.forEach((meme) => {
+    meme.images = JSON.parse(meme.images);
+    meme.tags = JSON.parse(meme.tags);
+  });
 
   const result = {
     'status': 'OK',

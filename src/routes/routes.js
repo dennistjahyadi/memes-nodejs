@@ -6,7 +6,7 @@ const { fetchSections, fetchTopSections } = require('../controllers/section-cont
 const { fetchMainComments, fetchComments, insertComments } = require('../controllers/comments-controller')
 const { insertLikes } = require('../controllers/likes-controller')
 const { login, updateUsername, updateProfilepic, getUser } = require('../controllers/user-controller')
-const { getFollowings, getFollowers } = require('../controllers/followings-controller')
+const { getFollowings, getFollowers, setFollowing } = require('../controllers/followings-controller')
 
 const { crypt, decrypt, validateToken } = require('../utils/crypt')
 const router = express.Router()
@@ -61,5 +61,6 @@ router.post("/insert-memes", insertMemes);
 router.get("/get-user", getUser);
 router.get("/fetch-followings", getFollowings);
 router.get("/fetch-followers", getFollowers);
+router.post("/set-following", setFollowing);
 
 module.exports = router

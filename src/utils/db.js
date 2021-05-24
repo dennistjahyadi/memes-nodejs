@@ -44,6 +44,8 @@ Comments.hasMany(Comments, {as: 'subcomments', foreignKey: "comment_id"})
 Users.hasMany(Memes, {as: 'memes', foreignKey: "user_id"})
 Users.hasMany(Followings, {as: 'following_user', foreignKey: "user_id"})
 Users.hasMany(Followings, {as: 'follower_user', foreignKey: "following_user_id"})
+Followings.belongsTo(Users, {as: 'user_follower_obj', foreignKey: "user_id"})
+Followings.belongsTo(Users, {as: 'user_following_obj', foreignKey: "following_user_id"})
 
 module.exports = {
   sequelize,

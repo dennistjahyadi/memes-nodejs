@@ -1,20 +1,29 @@
-const { Followings, Memes } = require("../utils/db");
+const { Followings, Memes, Users } = require("../utils/db");
 const { Sequelize } = require("sequelize");
 const Op = Sequelize.Op
 
 const getFollowings = async (req, res) => {
+    const offset = req.query.offset
     const userId = req.query.user_id
+    const limit = 20
 
     const followings = await Followings.findAll({
-        where: {user_id: userId},
+        where: {
+          user_id: userId, 
+          following_user_id: {
+            [Op.ne]: null
+          }
+        },
         include: [
             {
               model: Users,
               required: true,
-              as: "following_user",
+              as: "user_following_obj",
             },
           ],
-    })
+          offset: parseInt(offset),
+          limit: parseInt(limit),
+        })
 
     const result = {
         status: "OK",
@@ -26,7 +35,9 @@ const getFollowings = async (req, res) => {
 
 
 const getFollowers = async (req, res) => {
+    const offset = req.query.offset
     const userId = req.query.user_id
+    const limit = 20
 
     const followers = await Followings.findAll({
         where: {following_user_id: userId},
@@ -34,9 +45,12 @@ const getFollowers = async (req, res) => {
             {
               model: Users,
               required: true,
-              as: "follower_user",
+              as: "user_follower_obj",
             },
           ],
+        offset: parseInt(offset),
+        limit: parseInt(limit),
+
     })
 
     const result = {

@@ -7,6 +7,7 @@ const { fetchMainComments, fetchComments, insertComments } = require('../control
 const { insertLikes } = require('../controllers/likes-controller')
 const { login, updateUsername, updateProfilepic, getUser } = require('../controllers/user-controller')
 const { getFollowings, getFollowers, setFollowing } = require('../controllers/followings-controller')
+const { fetchNotifications } = require('../controllers/notifications-controller')
 
 const { crypt, decrypt, validateToken } = require('../utils/crypt')
 const router = express.Router()
@@ -62,5 +63,6 @@ router.get("/get-user", getUser);
 router.get("/fetch-followings", getFollowings);
 router.get("/fetch-followers", getFollowers);
 router.post("/set-following", setFollowing);
+router.get("/fetch-notifications", fetchNotifications);
 
 module.exports = router

@@ -6,6 +6,7 @@ const SectionsModel = require("../models/sections");
 const TagsModel = require("../models/tags");
 const UsersModel = require("../models/users");
 const FollowingsModel = require("../models/followings");
+const NotificationsModel = require("../models/notifications");
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -21,7 +22,7 @@ const sequelize = new Sequelize(dbName, username, password, {
 const authenticate = async () => {
   try {
     await sequelize.authenticate();
-    console.log("Daatabase connection has been established successfully.");
+    console.log("Database connection has been established successfully.");
   } catch (error) {
     console.error("Unable to connect to the database:", error);
   }
@@ -36,6 +37,7 @@ const Sections = SectionsModel(sequelize, Sequelize);
 const Tags = TagsModel(sequelize, Sequelize);
 const Users = UsersModel(sequelize, Sequelize);
 const Followings = FollowingsModel(sequelize, Sequelize);
+const Notifications = NotificationsModel(sequelize, Sequelize);
 
 Memes.hasMany(Likes, {foreignKey: "meme_id"})
 Memes.belongsTo(Users, {as: 'user', foreignKey: "user_id"})
@@ -55,5 +57,6 @@ module.exports = {
   Sections,
   Tags,
   Users,
-  Followings
+  Followings,
+  Notifications
 };

@@ -48,6 +48,10 @@ Users.hasMany(Followings, {as: 'following_user', foreignKey: "user_id"})
 Users.hasMany(Followings, {as: 'follower_user', foreignKey: "following_user_id"})
 Followings.belongsTo(Users, {as: 'user_follower_obj', foreignKey: "user_id"})
 Followings.belongsTo(Users, {as: 'user_following_obj', foreignKey: "following_user_id"})
+Notifications.belongsTo(Users, {as: 'user_from_obj', foreignKey: "user_id_from"})
+Notifications.belongsTo(Memes, {as: 'meme_obj', foreignKey: "meme_id"})
+Notifications.belongsTo(Comments, {as: 'main_comment_obj', foreignKey: "main_comment_id"})
+Notifications.belongsTo(Comments, {as: 'current_comment_obj', foreignKey: "current_comment_id"})
 
 module.exports = {
   sequelize,

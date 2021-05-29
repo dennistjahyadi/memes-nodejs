@@ -1,4 +1,5 @@
 const { Followings, Memes, Users } = require("../utils/db");
+const { insertNotifFollowing } = require("./notifications-controller");
 const { Sequelize } = require("sequelize");
 const Op = Sequelize.Op
 
@@ -97,6 +98,8 @@ const setFollowing = async (req, res) => {
     }else{
       followings = await Followings.create({ ...param })
     }
+    await insertNotifFollowing(userId, followingUserId)
+
   }else{
     await Followings.update({ following_user_id: null }, {
       where: {
@@ -105,6 +108,7 @@ const setFollowing = async (req, res) => {
       }
     });
   }
+
 
   const result = {
       status: "OK",

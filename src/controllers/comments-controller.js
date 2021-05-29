@@ -1,4 +1,5 @@
 const { Comments, Users, sequelize } = require("../utils/db");
+const { insertNotifMemeComment, insertNotifSubcomment } = require("./notifications-controller");
 const dateFormat = require("dateformat");
 
 const fetchMainComments = async (req, res) => {
@@ -216,6 +217,15 @@ const insertComments = async (req, res) => {
   }
 
   const comments = await Comments.create({ ...param });
+  if(commentId){
+    const comObj = await Comments.findOne({
+      where: { id: commentId }
+    });
+    await insertNotifSubcomment(userId, comObj.user_id, memeId, comments.id, commentId)
+    
+  }else{
+    await insertNotifMemeComment(userId, memeId, comments.id)
+  }
 
   const result = {
     status: "OK",

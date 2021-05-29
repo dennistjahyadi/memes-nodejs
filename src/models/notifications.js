@@ -19,7 +19,8 @@ module.exports = (sequelize, DataTypes) => {
     meme_id: DataTypes.BIGINT,
     current_comment_id: DataTypes.BIGINT,
     main_comment_id: DataTypes.BIGINT,
-    messages: DataTypes.TEXT
+    messages: DataTypes.TEXT,
+    type: DataTypes.STRING // meme_comment, sub_comment, following
   }, {
     sequelize,
     modelName: 'Notifications',

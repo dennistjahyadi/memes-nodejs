@@ -6,6 +6,15 @@ const {
   sequelize,
 } = require("../utils/db");
 const { Sequelize } = require("sequelize");
+const admin = require("firebase-admin");
+
+var serviceAccount = require("../config/serviceAccountKey.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://memes-network-1554020980788.firebaseio.com"
+});
+
 const Op = Sequelize.Op;
 
 const fetchNotifications = async (req, res) => {
@@ -90,6 +99,8 @@ const insertNotifMemeComment = async (
   current_comment_id
 ) => {
   // type: meme_comment
+  const notifType = "meme_comment"
+
   const user = await Users.findOne({
     where: { id: user_id_from },
   });
@@ -98,18 +109,26 @@ const insertNotifMemeComment = async (
     where: { id: meme_id },
   });
   const userId = meme.user_id;
-  console.log("anjeng");
-  console.log(user_id_from);
-  console.log(meme.user_id);
   if (user_id_from != meme.user_id) {
     const notification = await Notifications.create({
       user_id_from,
       userId,
       meme_id,
-      type: "meme_comment",
+      type: notifType,
       current_comment_id,
       messages: `${user.username} comment to your content`,
     });
+    const userDest = await Users.findOne({
+      where: { id: userId },
+    });
+    const commentObj = await Comments.findOne({
+      where: { id: current_comment_id },
+    });
+    const firebaseToken = userDest.firebase_token
+    const photo_url = userDest.photo_url
+    if(firebaseToken){
+      sendPushNotif(firebaseToken, `${user.username} comment to your content`, commentObj.messages, photo_url, notifType, meme_id.toString(), '', '')
+    }
   }
 };
 
@@ -121,6 +140,8 @@ const insertNotifSubcomment = async (
   main_comment_id
 ) => {
   // type: sub_comment
+  const notifType = "sub_comment"
+
   const user = await Users.findOne({
     where: { id: user_id_from },
   });
@@ -130,22 +151,35 @@ const insertNotifSubcomment = async (
       user_id_from,
       user_id_dest,
       meme_id,
-      type: "sub_comment",
+      type: notifType,
       current_comment_id,
       main_comment_id,
       messages: `${user.username} reply your comment`,
     });
+    const userDest = await Users.findOne({
+      where: { id: user_id_dest },
+    });
+    const commentObj = await Comments.findOne({
+      where: { id: current_comment_id },
+    });
+    const firebaseToken = userDest.firebase_token
+    const photo_url = userDest.photo_url
+    if(firebaseToken){
+      sendPushNotif(firebaseToken, `${user.username} reply your comment`, commentObj.messages, photo_url, notifType, '', main_comment_id.toString(), '')
+    }
   }
 };
 
 const insertNotifFollowing = async (user_id_from, user_id_dest) => {
   // type: following
+  const notifType = "following"
   const user = await Users.findOne({
     where: { id: user_id_from },
   });
   var notifs = await Notifications.findAll({
     where: {
       user_id_from,
+      type: notifType
     },
     limit: 10,
     order: [["id", "DESC"]],
@@ -161,10 +195,50 @@ const insertNotifFollowing = async (user_id_from, user_id_dest) => {
     await Notifications.create({
       user_id_from,
       user_id_dest,
-      type: "following",
+      type: notifType,
       messages: `${user.username} is Following you`,
     });
+
+    const userDest = await Users.findOne({
+      where: { id: user_id_dest },
+    });
+    const firebaseToken = userDest.firebase_token
+    const photo_url = (user.photo_url)?user.photo_url : ""
+    if(firebaseToken) {
+      sendPushNotif(firebaseToken, `${user.username} is Following you`, '', photo_url, notifType, '', '', user_id_from.toString())
+    }
   }
+};
+
+const sendPushNotif = (token='', title='', messages='', iconUrl='', notifType='', memeId='', commentId='', userId='') => {
+  // This registration token comes from the client FCM SDKs.
+  const registrationToken = token;
+
+  const message = {
+    data: {
+      title,
+      messages,
+      iconUrl,
+      notifType,
+      memeId,
+      commentId,
+      userId
+    },
+    token: registrationToken,
+  };
+
+  // Send a message to the device corresponding to the provided
+  // registration token.
+  admin
+    .messaging()
+    .send(message)
+    .then((response) => {
+      // Response is a message ID string.
+      console.log("Successfully sent message:", response);
+    })
+    .catch((error) => {
+      console.log("Error sending message:", error);
+    });
 };
 
 module.exports = {

@@ -1,11 +1,11 @@
 
 const express = require("express");
 const { date } = require("joi");
-const { fetchMemes, fetchLikedMemes, fetchMyMemes, insertMemes } = require('../controllers/memes-controller')
+const { fetchMemes, fetchLikedMemes, fetchMyMemes, insertMemes, getMeme } = require('../controllers/memes-controller')
 const { fetchSections, fetchTopSections } = require('../controllers/section-controller')
-const { fetchMainComments, fetchComments, insertComments } = require('../controllers/comments-controller')
+const { fetchMainComments, fetchComments, insertComments, getComment } = require('../controllers/comments-controller')
 const { insertLikes } = require('../controllers/likes-controller')
-const { login, updateUsername, updateProfilepic, getUser } = require('../controllers/user-controller')
+const { login, updateUsername, updateProfilepic, getUser, setFirebaseToken } = require('../controllers/user-controller')
 const { getFollowings, getFollowers, setFollowing } = require('../controllers/followings-controller')
 const { fetchNotifications } = require('../controllers/notifications-controller')
 
@@ -64,5 +64,8 @@ router.get("/fetch-followings", getFollowings);
 router.get("/fetch-followers", getFollowers);
 router.post("/set-following", setFollowing);
 router.get("/fetch-notifications", fetchNotifications);
+router.post("/set-firebase-token", setFirebaseToken);
+router.get("/get-comment", getComment);
+router.get("/get-meme", getMeme);
 
 module.exports = router

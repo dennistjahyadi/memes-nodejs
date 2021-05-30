@@ -103,7 +103,7 @@ const fetchMainComments = async (req, res) => {
     order: [["id", sort]],
   });
 
-  var dateNow = dateFormat(new Date(), "yyyy-mm-dd h:MM:ss");
+  var dateNow = dateFormat(new Date(), "yyyy-mm-dd H:MM:ss");
 
   const result = {
     status: "OK",
@@ -177,7 +177,7 @@ const fetchComments = async (req, res) => {
     order: [["id", sort]],
   });
 
-  var dateNow = dateFormat(new Date(), "yyyy-mm-dd h:MM:ss");
+  var dateNow = dateFormat(new Date(), "yyyy-mm-dd H:MM:ss");
 
   const result = {
     status: "OK",
@@ -235,4 +235,41 @@ const insertComments = async (req, res) => {
   return res.send(result);
 };
 
-module.exports = { fetchMainComments, fetchComments, insertComments };
+const getComment = async (req, res) => {
+  const commentId = req.query.comment_id
+  const comObj = await Comments.findOne({
+    attributes: [
+      "id",
+      "meme_id",
+      "user_id",
+      "messages",
+      "comment_id",
+      [
+        sequelize.fn(
+          "date_format",
+          sequelize.col("comments.created_at"),
+          "%Y-%m-%d %H:%i:%S"
+        ),
+        "created_at",
+      ],
+      [
+        sequelize.fn(
+          "date_format",
+          sequelize.col("comments.updated_at"),
+          "%Y-%m-%d %H:%i:%S"
+        ),
+        "updated_at",
+      ],
+    ],
+    where: { id: commentId }
+  });
+  var dateNow = dateFormat(new Date(), "yyyy-mm-dd H:MM:ss");
+  const result = {
+    status: "OK",
+    comment: comObj,
+    current_datetime: dateNow
+  };
+  return res.send(result);
+}
+
+module.exports = { fetchMainComments, fetchComments, insertComments, getComment };

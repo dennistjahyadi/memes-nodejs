@@ -19,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
       password: DataTypes.STRING,
       photo_url: DataTypes.STRING,
       remember_token: DataTypes.STRING,
+      firebase_token: DataTypes.TEXT,
     },
     {
       sequelize,

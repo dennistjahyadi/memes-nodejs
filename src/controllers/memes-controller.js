@@ -278,4 +278,19 @@ const insertMemes = async (req, res) => {
   return res.send(result);
 };
 
-module.exports = { fetchMemes, fetchLikedMemes, fetchMyMemes, insertMemes };
+const getMeme = async (req, res) => {
+  const memeId = req.query.meme_id
+  const memeObj = await Memes.findOne({
+    where: { id: memeId }
+  });
+  
+  memeObj.images = JSON.parse(memeObj.images);
+  memeObj.tags = JSON.parse(memeObj.tags);
+  const result = {
+    status: "OK",
+    meme: memeObj,
+  };
+  return res.send(result);
+}
+
+module.exports = { fetchMemes, fetchLikedMemes, fetchMyMemes, insertMemes, getMeme };

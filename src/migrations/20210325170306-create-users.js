@@ -37,6 +37,9 @@ module.exports = {
       remember_token: {
         type: Sequelize.STRING
       },
+      firebase_token: {
+        type: Sequelize.TEXT
+      },
       created_at: {
         allowNull: false,
         type: Sequelize.DATE

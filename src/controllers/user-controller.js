@@ -121,7 +121,7 @@ const getUser = async (req, res) => {
       {
         model: Followings,
         required: false,
-        as: "follower_user"
+        as: "follower_user",
       },
     ],
   });
@@ -138,4 +138,28 @@ const getUser = async (req, res) => {
   return res.send(result);
 };
 
-module.exports = { login, updateUsername, updateProfilepic, getUser };
+const setFirebaseToken = async (req, res) => {
+  var userId = req.body.user_id;
+  var firebase_token = req.body.token;
+  var user = await Users.update(
+    { firebase_token },
+    {
+      where: {
+        id: userId,
+      },
+    }
+  );
+  const result = {
+    status: "OK",
+    user: user,
+  };
+  return res.send(result);
+};
+
+module.exports = {
+  login,
+  updateUsername,
+  updateProfilepic,
+  getUser,
+  setFirebaseToken,
+};

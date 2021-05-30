@@ -10,7 +10,7 @@ const fetchMemes = async (req, res) => {
 
   if (!userId) userId = -1;
   if (!offset) offset = 0;
-
+  console.log("aaa: "+offset)
   var where = {};
   if (postSection) where["post_section"] = { [Op.like]: `%${postSection}%` };
 

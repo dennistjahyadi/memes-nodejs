@@ -7,6 +7,7 @@ const {
 } = require("../utils/db");
 const { Sequelize } = require("sequelize");
 const admin = require("firebase-admin");
+const dateFormat = require("dateformat");
 
 var serviceAccount = require("../config/serviceAccountKey.json");
 
@@ -69,11 +70,57 @@ const fetchNotifications = async (req, res) => {
         model: Comments,
         required: false,
         as: "main_comment_obj",
+        attributes: [
+          "id",
+          "meme_id",
+          "user_id",
+          "messages",
+          "comment_id",
+          [
+            sequelize.fn(
+              "date_format",
+              sequelize.col("main_comment_obj.created_at"),
+              "%Y-%m-%d %H:%i:%S"
+            ),
+            "created_at",
+          ],
+          [
+            sequelize.fn(
+              "date_format",
+              sequelize.col("main_comment_obj.updated_at"),
+              "%Y-%m-%d %H:%i:%S"
+            ),
+            "updated_at",
+          ],
+        ]
       },
       {
         model: Comments,
         required: false,
         as: "current_comment_obj",
+        attributes: [
+          "id",
+          "meme_id",
+          "user_id",
+          "messages",
+          "comment_id",
+          [
+            sequelize.fn(
+              "date_format",
+              sequelize.col("current_comment_obj.created_at"),
+              "%Y-%m-%d %H:%i:%S"
+            ),
+            "created_at",
+          ],
+          [
+            sequelize.fn(
+              "date_format",
+              sequelize.col("current_comment_obj.updated_at"),
+              "%Y-%m-%d %H:%i:%S"
+            ),
+            "updated_at",
+          ],
+        ]
       },
     ],
   });
@@ -84,10 +131,12 @@ const fetchNotifications = async (req, res) => {
       notif.meme_obj.tags = JSON.parse(notif.meme_obj.tags);
     } catch (ex) {}
   });
+  var dateNow = dateFormat(new Date(), "yyyy-mm-dd H:MM:ss");
 
   const result = {
     status: "OK",
     notifications: notifications,
+    current_datetime: dateNow
   };
 
   return res.send(result);
@@ -125,8 +174,11 @@ const insertNotifMemeComment = async (
       where: { id: current_comment_id },
     });
     const firebaseToken = userDest.firebase_token
-    const photo_url = userDest.photo_url
+    const photo_url = (userDest.photo_url)?userDest.photo_url : ""
     if(firebaseToken){
+      console.log(commentObj.messages)
+      console.log(photo_url)
+      console.log(notifType)
       sendPushNotif(firebaseToken, `${user.username} comment to your content`, commentObj.messages, photo_url, notifType, meme_id.toString(), '', '')
     }
   }
@@ -163,7 +215,7 @@ const insertNotifSubcomment = async (
       where: { id: current_comment_id },
     });
     const firebaseToken = userDest.firebase_token
-    const photo_url = userDest.photo_url
+    const photo_url = (userDest.photo_url)?userDest.photo_url : ""
     if(firebaseToken){
       sendPushNotif(firebaseToken, `${user.username} reply your comment`, commentObj.messages, photo_url, notifType, '', main_comment_id.toString(), '')
     }
@@ -210,7 +262,7 @@ const insertNotifFollowing = async (user_id_from, user_id_dest) => {
   }
 };
 
-const sendPushNotif = (token='', title='', messages='', iconUrl='', notifType='', memeId='', commentId='', userId='') => {
+const sendPushNotif = (token, title, messages, iconUrl, notifType, memeId, commentId, userId) => {
   // This registration token comes from the client FCM SDKs.
   const registrationToken = token;
 

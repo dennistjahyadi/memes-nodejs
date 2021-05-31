@@ -1,7 +1,7 @@
 
 const express = require("express");
 const { date } = require("joi");
-const { fetchMemes, fetchLikedMemes, fetchMyMemes, insertMemes, getMeme } = require('../controllers/memes-controller')
+const { fetchMemes, fetchLikedMemes, fetchMyMemes, insertMemes, getMeme, fetchMemesJustFollowing } = require('../controllers/memes-controller')
 const { fetchSections, fetchTopSections } = require('../controllers/section-controller')
 const { fetchMainComments, fetchComments, insertComments, getComment } = require('../controllers/comments-controller')
 const { insertLikes } = require('../controllers/likes-controller')
@@ -47,6 +47,7 @@ router.get("/validate",(req, resp) => {
 })
 
 router.get("/fetch-memes", fetchMemes);
+router.get("/fetch-memes-just-following", fetchMemesJustFollowing);
 router.get("/fetch-sections", fetchSections);
 router.get("/fetch-top-sections", fetchTopSections);
 router.get("/fetch-liked-memes", fetchLikedMemes);

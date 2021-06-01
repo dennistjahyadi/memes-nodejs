@@ -85,7 +85,6 @@ const fetchMemesJustFollowing = async (req, res) => {
   var limit = req.query.limit;
   var offset = req.query.offset;
   var userId = req.query.user_id;
-  var postSection = req.query.post_section;
   if (!limit) limit = 20;
 
   if (!userId) userId = -1;
@@ -94,12 +93,11 @@ const fetchMemesJustFollowing = async (req, res) => {
   const followings = await Followings.findAll({
     where: {user_id: userId}
   })
-
   const userIdList = followings.map(flw => flw['following_user_id'])
-  
+
   var where = {};
-  if (postSection) where["user_id"] = userIdList
-  console.log(where)
+  where["user_id"] = userIdList
+
   const memes = await Memes.findAll({
     where,
     attributes: [

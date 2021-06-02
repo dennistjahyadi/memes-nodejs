@@ -54,6 +54,7 @@ const fetchNotifications = async (req, res) => {
     ],
     limit: parseInt(limit),
     offset: parseInt(offset),
+    order: [["id", "desc"]],
     where,
     include: [
       {

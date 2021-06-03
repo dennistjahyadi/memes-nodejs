@@ -20,8 +20,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "comments",
-      tableName: "comments",
+      modelName: "Comments",
       createdAt: "created_at",
       updatedAt: "updated_at",
     }

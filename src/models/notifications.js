@@ -23,9 +23,7 @@ module.exports = (sequelize, DataTypes) => {
     type: DataTypes.STRING // meme_comment, sub_comment, following
   }, {
     sequelize,
-    modelName: 'notifications',
-    tableName: "notifications",
-
+    modelName: 'Notifications',
     createdAt: "created_at",
     updatedAt: "updated_at",
   });

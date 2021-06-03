@@ -3,7 +3,7 @@ const UsersModel = require("../models/users");
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('followings', {
+    await queryInterface.createTable('Followings', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -40,6 +40,6 @@ module.exports = {
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('followings');
+    await queryInterface.dropTable('Followings');
   }
 };

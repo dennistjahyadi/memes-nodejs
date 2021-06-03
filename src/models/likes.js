@@ -20,9 +20,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "likes",
-      tableName: "likes",
-
+      modelName: "Likes",
       createdAt: "created_at",
       updatedAt: "updated_at",
     }

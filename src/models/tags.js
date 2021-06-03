@@ -18,6 +18,8 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "tags",
+      tableName: "tags",
+
       createdAt: "created_at",
       updatedAt: "updated_at",
     }

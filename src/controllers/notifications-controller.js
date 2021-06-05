@@ -66,6 +66,46 @@ const fetchNotifications = async (req, res) => {
         model: Memes,
         required: false,
         as: "meme_obj",
+        attributes: [
+          "id",
+          "code",
+          "title",
+          "type",
+          "images",
+          "tags",
+          "post_section",
+          "created_at",
+          "updated_at",
+          [
+            sequelize.literal(`(
+                    SELECT COUNT(*)
+                    FROM likes
+                    WHERE
+                        likes.meme_id = meme_obj.id
+                        AND
+                        likes.like = 1
+                )`),
+            "total_like",
+          ],
+          [
+            sequelize.literal(`(
+              SELECT COUNT(*)
+              FROM comments
+              WHERE
+                comments.meme_id = meme_obj.id
+              )`),
+            "total_comment",
+          ],
+          [
+            sequelize.literal(`(
+              SELECT likes.like
+              FROM likes
+              WHERE
+                likes.meme_id = meme_obj.id and likes.user_id = ${userId}
+              )`),
+            "is_liked",
+          ],
+        ]
       },
       {
         model: Comments,
@@ -157,21 +197,36 @@ const insertNotifMemeLiked = async (
   const meme = await Memes.findOne({
     where: { id: meme_id },
   });
-  const userId = meme.user_id;
-  if (user_id_from != meme.user_id) {
+  const user_id_dest = meme.user_id;
+  var notifsCount = await Notifications.count({
+    where: {
+      user_id_from,
+      meme_id,
+      type: notifType
+    },
+    limit: 10,
+    order: [["id", "DESC"]],
+  });
+  
+  if (user_id_from != meme.user_id && notifsCount==0) {
     const notification = await Notifications.create({
       user_id_from,
-      userId,
+      user_id_dest,
       meme_id,
       type: notifType,
       messages: `${user.username} liked your memes`,
     });
     const userDest = await Users.findOne({
-      where: { id: userId },
+      where: { id: user_id_dest },
     });
   
     const firebaseToken = userDest.firebase_token
-    const photo_url = (userDest.photo_url)?userDest.photo_url : ""
+    try {
+      meme.images = JSON.parse(meme.images);
+      meme.tags = JSON.parse(meme.tags);
+    } catch (ex) {}
+    
+    const photo_url = meme.images.image700.url
     if(firebaseToken){
       console.log(photo_url)
       console.log(notifType)

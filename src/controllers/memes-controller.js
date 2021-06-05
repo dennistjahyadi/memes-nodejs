@@ -363,8 +363,50 @@ const insertMemes = async (req, res) => {
 };
 
 const getMeme = async (req, res) => {
+  const userId = req.query.user_id
   const memeId = req.query.meme_id
+
   const memeObj = await Memes.findOne({
+    attributes: [
+      "id",
+      "code",
+      "title",
+      "type",
+      "images",
+      "tags",
+      "post_section",
+      "created_at",
+      "updated_at",
+      [
+        sequelize.literal(`(
+                SELECT COUNT(*)
+                FROM likes
+                WHERE
+                    likes.meme_id = Memes.id
+                    AND
+                    likes.like = 1
+            )`),
+        "total_like",
+      ],
+      [
+        sequelize.literal(`(
+          SELECT COUNT(*)
+          FROM comments
+          WHERE
+            comments.meme_id = Memes.id
+          )`),
+        "total_comment",
+      ],
+      [
+        sequelize.literal(`(
+          SELECT likes.like
+          FROM likes
+          WHERE
+            likes.meme_id = memes.id and likes.user_id = ${userId}
+          )`),
+        "is_liked",
+      ],
+    ],
     where: { id: memeId }
   });
   

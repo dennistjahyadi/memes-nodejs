@@ -143,6 +143,43 @@ const fetchNotifications = async (req, res) => {
   return res.send(result);
 };
 
+const insertNotifMemeLiked = async (
+  user_id_from,
+  meme_id
+) => {
+  // type: meme_comment
+  const notifType = "meme_liked"
+
+  const user = await Users.findOne({
+    where: { id: user_id_from },
+  });
+
+  const meme = await Memes.findOne({
+    where: { id: meme_id },
+  });
+  const userId = meme.user_id;
+  if (user_id_from != meme.user_id) {
+    const notification = await Notifications.create({
+      user_id_from,
+      userId,
+      meme_id,
+      type: notifType,
+      messages: `${user.username} comment to your content`,
+    });
+    const userDest = await Users.findOne({
+      where: { id: userId },
+    });
+  
+    const firebaseToken = userDest.firebase_token
+    const photo_url = (userDest.photo_url)?userDest.photo_url : ""
+    if(firebaseToken){
+      console.log(photo_url)
+      console.log(notifType)
+      sendPushNotif(firebaseToken, `${user.username} liked your memes`, '', photo_url, notifType, meme_id.toString(), '', '')
+    }
+  }
+};
+
 const insertNotifMemeComment = async (
   user_id_from,
   meme_id,
@@ -299,4 +336,5 @@ module.exports = {
   insertNotifFollowing,
   insertNotifMemeComment,
   insertNotifSubcomment,
+  insertNotifMemeLiked
 };

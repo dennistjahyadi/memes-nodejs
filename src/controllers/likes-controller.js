@@ -1,4 +1,5 @@
 const { Likes, sequelize } = require("../utils/db");
+const { insertNotifMemeLiked } = require("./notifications-controller");
 
 const insertLikes = async (req, res) => {
     var userId = req.body.user_id;
@@ -25,6 +26,9 @@ const insertLikes = async (req, res) => {
         await likes.save()
     }else{
         likes = await Likes.create({ user_id : userId, meme_id: memeId, like: liked });
+    }
+    if(liked==1){
+        insertNotifMemeLiked(userId, memeId)
     }
 
     totalLike = await Likes.count({

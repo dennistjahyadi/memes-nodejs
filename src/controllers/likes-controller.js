@@ -27,7 +27,7 @@ const insertLikes = async (req, res) => {
     }else{
         likes = await Likes.create({ user_id : userId, meme_id: memeId, like: liked });
     }
-    if(liked==1){
+    if(liked=='1'){
         insertNotifMemeLiked(userId, memeId)
     }
 

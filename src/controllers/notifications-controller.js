@@ -164,7 +164,7 @@ const insertNotifMemeLiked = async (
       userId,
       meme_id,
       type: notifType,
-      messages: `${user.username} comment to your content`,
+      messages: `${user.username} liked your memes`,
     });
     const userDest = await Users.findOne({
       where: { id: userId },

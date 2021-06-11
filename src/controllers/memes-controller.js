@@ -65,7 +65,7 @@ const fetchMemes = async (req, res) => {
     ],
     limit: parseInt(limit),
     offset: parseInt(offset),
-    order: [["id", "desc"]],
+    order: sequelize.random(),
   });
 
   memes.forEach((meme) => {

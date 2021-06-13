@@ -11,11 +11,11 @@ const login = async (req, res) => {
 
   const result = {
     status: "OK",
-    user: users[0],
+    user: users[0]
   };
 
   return res.send(result);
-};
+}
 
 const updateUsername = async (req, res) => {
   var userId = req.body.user_id;
@@ -71,7 +71,7 @@ const updateUsername = async (req, res) => {
     user: user,
   };
   return res.send(result);
-};
+}
 
 const updateProfilepic = async (req, res) => {
   var userId = req.body.user_id;
@@ -95,7 +95,7 @@ const updateProfilepic = async (req, res) => {
     user: user,
   };
   return res.send(result);
-};
+}
 
 const getUser = async (req, res) => {
   var userId = req.query.user_id;
@@ -136,7 +136,42 @@ const getUser = async (req, res) => {
     user: user,
   };
   return res.send(result);
-};
+}
+
+const fetchUser = async (req, res) => {
+  var limit = req.query.limit;
+  var offset = req.query.offset;
+  var filter = req.query.filter;
+  if (!limit) limit = 20;
+  if (!offset) offset = 0;
+
+  if(!filter || filter == ""){
+    const result = {
+      status: "OK",
+      users: [],
+    };
+  
+    return res.send(result);
+  }
+
+  var where = {};
+
+  if (filter) where["username"] = { [Op.like]: `%${filter}%` };
+
+  const users = await Users.findAll({
+    limit: parseInt(limit),
+    offset: parseInt(offset),
+    where,
+    order: [["id", "desc"]]
+  });
+
+  const result = {
+    status: "OK",
+    users: users,
+  };
+
+  return res.send(result);
+}
 
 const setFirebaseToken = async (req, res) => {
   var userId = req.body.user_id;
@@ -151,10 +186,10 @@ const setFirebaseToken = async (req, res) => {
   );
   const result = {
     status: "OK",
-    user: user,
+    user: user
   };
   return res.send(result);
-};
+}
 
 module.exports = {
   login,
@@ -162,4 +197,5 @@ module.exports = {
   updateProfilepic,
   getUser,
   setFirebaseToken,
-};
+  fetchUser
+}

@@ -5,7 +5,7 @@ const { fetchMemes, fetchLikedMemes, fetchMyMemes, insertMemes, getMeme, fetchMe
 const { fetchSections, fetchTopSections } = require('../controllers/section-controller')
 const { fetchMainComments, fetchComments, insertComments, getComment } = require('../controllers/comments-controller')
 const { insertLikes } = require('../controllers/likes-controller')
-const { login, updateUsername, updateProfilepic, getUser, setFirebaseToken } = require('../controllers/user-controller')
+const { login, updateUsername, updateProfilepic, getUser, fetchUser, setFirebaseToken } = require('../controllers/user-controller')
 const { getFollowings, getFollowers, setFollowing } = require('../controllers/followings-controller')
 const { fetchNotifications } = require('../controllers/notifications-controller')
 
@@ -68,5 +68,6 @@ router.get("/fetch-notifications", fetchNotifications);
 router.post("/set-firebase-token", setFirebaseToken);
 router.get("/get-comment", getComment);
 router.get("/get-meme", getMeme);
+router.get("/fetch-user", fetchUser);
 
 module.exports = router

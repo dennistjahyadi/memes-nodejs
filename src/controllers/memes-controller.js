@@ -97,7 +97,7 @@ const fetchMemesJustFollowing = async (req, res) => {
 
   var where = {};
   where["user_id"] = userIdList
-
+  userIdList.push(userId)
   const memes = await Memes.findAll({
     where,
     attributes: [

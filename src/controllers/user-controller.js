@@ -11,11 +11,11 @@ const login = async (req, res) => {
 
   const result = {
     status: "OK",
-    user: users[0]
+    user: users[0],
   };
 
   return res.send(result);
-}
+};
 
 const updateUsername = async (req, res) => {
   var userId = req.body.user_id;
@@ -71,7 +71,7 @@ const updateUsername = async (req, res) => {
     user: user,
   };
   return res.send(result);
-}
+};
 
 const updateProfilepic = async (req, res) => {
   var userId = req.body.user_id;
@@ -95,48 +95,56 @@ const updateProfilepic = async (req, res) => {
     user: user,
   };
   return res.send(result);
-}
+};
 
 const getUser = async (req, res) => {
+  var currentUserId = req.query.current_user_id;
   var userId = req.query.user_id;
 
+  if(!currentUserId) currentUserId = -1
+
   const user = await Users.findOne({
-    where: { id: userId },
-    include: [
-      {
-        model: Memes,
-        required: false,
-        as: "memes",
-      },
-      {
-        model: Followings,
-        required: false,
-        as: "following_user",
-        where: {
-          following_user_id: {
-            [Op.ne]: null,
-          },
-        },
-      },
-      {
-        model: Followings,
-        required: false,
-        as: "follower_user",
-      },
-    ],
+    where: { id: userId }
+  });
+  
+  const totalMemes = await Memes.count({ 
+    where: {
+      user_id: userId
+    }
   });
 
-  user.memes.forEach((meme) => {
-    meme.images = JSON.parse(meme.images);
-    meme.tags = JSON.parse(meme.tags);
+  const followingTotal = await Followings.count({ 
+    where: {
+      following_user_id: {
+        [Op.ne]: null,
+      },
+      user_id: userId
+    }
   });
 
+  const followerTotal = await Followings.count({ 
+    where: {
+      following_user_id: userId
+    }
+  });
+
+  const isFollowing = await Followings.count({ 
+    where: {
+      user_id: currentUserId,
+      following_user_id: userId
+    }
+  });
+  
   const result = {
     status: "OK",
     user: user,
+    total_memes: totalMemes,
+    total_following: followingTotal,
+    total_follower: followerTotal,
+    is_following: (isFollowing==0)? false: true
   };
   return res.send(result);
-}
+};
 
 const fetchUser = async (req, res) => {
   var limit = req.query.limit;
@@ -145,12 +153,12 @@ const fetchUser = async (req, res) => {
   if (!limit) limit = 20;
   if (!offset) offset = 0;
 
-  if(!filter || filter == ""){
+  if (!filter || filter == "") {
     const result = {
       status: "OK",
       users: [],
     };
-  
+
     return res.send(result);
   }
 
@@ -162,7 +170,7 @@ const fetchUser = async (req, res) => {
     limit: parseInt(limit),
     offset: parseInt(offset),
     where,
-    order: [["id", "desc"]]
+    order: [["id", "desc"]],
   });
 
   const result = {
@@ -171,7 +179,7 @@ const fetchUser = async (req, res) => {
   };
 
   return res.send(result);
-}
+};
 
 const setFirebaseToken = async (req, res) => {
   var userId = req.body.user_id;
@@ -186,10 +194,10 @@ const setFirebaseToken = async (req, res) => {
   );
   const result = {
     status: "OK",
-    user: user
+    user: user,
   };
   return res.send(result);
-}
+};
 
 module.exports = {
   login,
@@ -197,5 +205,5 @@ module.exports = {
   updateProfilepic,
   getUser,
   setFirebaseToken,
-  fetchUser
-}
+  fetchUser,
+};

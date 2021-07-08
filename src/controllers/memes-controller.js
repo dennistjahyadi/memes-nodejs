@@ -1,6 +1,179 @@
 const { Memes, Likes, Sections, Users, Followings, sequelize } = require("../utils/db");
 const { Sequelize } = require("sequelize");
 const Op = Sequelize.Op;
+
+const fetchMemesHome = async (req, res) => {
+  var limit = req.query.limit;
+  var offset = req.query.offset;
+  var userId = req.query.user_id;
+  var postSection = req.query.post_section;
+  if (!limit) limit = 20;
+
+  if (!userId) userId = -1;
+  if (!offset) offset = 0;
+  console.log("aaa: "+offset)
+  var where = {};
+  if (postSection) where["post_section"] = { [Op.like]: `%${postSection}%` };
+
+  var memes = []
+  if(offset==0){
+    memes = await getLastMemesRandom(userId, where, limit)
+  }else{
+    memes = await Memes.findAll({
+    where,
+    attributes: [
+      "id",
+      "code",
+      "title",
+      "type",
+      "images",
+      "tags",
+      "post_section",
+      "created_at",
+      "updated_at",
+      [
+        sequelize.literal(`(
+                SELECT COUNT(*)
+                FROM likes
+                WHERE
+                    likes.meme_id = Memes.id
+                    AND
+                    likes.like = 1
+            )`),
+        "total_like",
+      ],
+      [
+        sequelize.literal(`(
+          SELECT COUNT(*)
+          FROM comments
+          WHERE
+            comments.meme_id = Memes.id
+          )`),
+        "total_comment",
+      ],
+      [
+        sequelize.literal(`(
+          SELECT likes.like
+          FROM likes
+          WHERE
+            likes.meme_id = memes.id and likes.user_id = ${userId}
+          )`),
+        "is_liked",
+      ],
+    ],
+    include: [
+      {
+        model: Users,
+        required: false,
+        as: "user",
+      },
+    ],
+    limit: parseInt(limit),
+    offset: parseInt(offset),
+    order: sequelize.random(),
+  });
+  }
+  memes.forEach((meme) => {
+    meme.images = JSON.parse(meme.images);
+    meme.tags = JSON.parse(meme.tags);
+  });
+
+  const result = {
+    status: "OK",
+    memes: memes,
+  };
+
+  return res.send(result);
+};
+
+const getLastMemesRandom = async (userId, where, limit) => {
+  const memes = await Memes.findAll({
+    where,
+    attributes: [
+      "id",
+      "code",
+      "title",
+      "type",
+      "images",
+      "tags",
+      "post_section",
+      "created_at",
+      "updated_at",
+      [
+        sequelize.literal(`(
+                SELECT COUNT(*)
+                FROM likes
+                WHERE
+                    likes.meme_id = Memes.id
+                    AND
+                    likes.like = 1
+            )`),
+        "total_like",
+      ],
+      [
+        sequelize.literal(`(
+          SELECT COUNT(*)
+          FROM comments
+          WHERE
+            comments.meme_id = Memes.id
+          )`),
+        "total_comment",
+      ],
+      [
+        sequelize.literal(`(
+          SELECT likes.like
+          FROM likes
+          WHERE
+            likes.meme_id = memes.id and likes.user_id = ${userId}
+          )`),
+        "is_liked",
+      ],
+    ],
+    include: [
+      {
+        model: Users,
+        required: false,
+        as: "user",
+      },
+    ],
+    limit: 200,
+    order: [["id", "desc"]],
+  });
+
+  var result = [];
+
+  for(var i=0;i< memes.length;i++){
+    if(result.length==limit){
+      break;
+    }else{
+      result.push(memes[i])
+    }
+
+  }
+
+  result = shuffle(result)
+
+  return result;
+}
+
+function shuffle(array) {
+  var currentIndex = array.length,  randomIndex;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
+  }
+
+  return array;
+}
+
 const fetchMemes = async (req, res) => {
   var limit = req.query.limit;
   var offset = req.query.offset;
@@ -64,7 +237,6 @@ const fetchMemes = async (req, res) => {
       },
     ],
     limit: parseInt(limit),
-    offset: parseInt(offset),
     order: sequelize.random(),
   });
 
@@ -419,4 +591,4 @@ const getMeme = async (req, res) => {
   return res.send(result);
 }
 
-module.exports = { fetchMemes, fetchLikedMemes, fetchMyMemes, insertMemes, getMeme, fetchMemesJustFollowing };
+module.exports = { fetchMemes, fetchMemesHome, fetchLikedMemes, fetchMyMemes, insertMemes, getMeme, fetchMemesJustFollowing };

@@ -46,7 +46,7 @@ router.get("/validate",(req, resp) => {
   
 })
 
-router.get("/fetch-memes", fetchMemesHome);
+router.get("/fetch-memes", fetchMemes);
 router.get("/fetch-memes-just-following", fetchMemesJustFollowing);
 router.get("/fetch-sections", fetchSections);
 router.get("/fetch-top-sections", fetchTopSections);

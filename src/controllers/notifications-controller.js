@@ -251,10 +251,11 @@ const insertNotifMemeComment = async (
     where: { id: meme_id },
   });
   const userId = meme.user_id;
+  const user_id_dest = userId;
   if (user_id_from != meme.user_id) {
     const notification = await Notifications.create({
       user_id_from,
-      userId,
+      user_id_dest,
       meme_id,
       type: notifType,
       current_comment_id,

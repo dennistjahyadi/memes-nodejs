@@ -267,6 +267,10 @@ const insertNotifMemeComment = async (
       where: { id: current_comment_id },
     });
     const firebaseToken = userDest.firebase_token
+    try {
+      meme.images = JSON.parse(meme.images);
+      meme.tags = JSON.parse(meme.tags);
+    } catch (ex) {}
     const photo_url = meme.images.image700.url
     if(firebaseToken){
       console.log(commentObj.messages)

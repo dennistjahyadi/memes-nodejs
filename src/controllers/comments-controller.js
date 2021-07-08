@@ -1,6 +1,7 @@
 const { Comments, Users, sequelize } = require("../utils/db");
 const { insertNotifMemeComment, insertNotifSubcomment } = require("./notifications-controller");
 const dateFormat = require("dateformat");
+require("dotenv").config();
 
 const fetchMainComments = async (req, res) => {
   var limit = req.query.limit;
@@ -102,7 +103,7 @@ const fetchMainComments = async (req, res) => {
     offset: parseInt(offset),
     order: [["id", sort]],
   });
-
+  process.env.TZ = 'Asia/Jakarta'
   var dateNow = dateFormat(new Date(), "yyyy-mm-dd H:MM:ss");
 
   const result = {
@@ -176,7 +177,7 @@ const fetchComments = async (req, res) => {
     offset: parseInt(offset),
     order: [["id", sort]],
   });
-
+  process.env.TZ = 'Asia/Jakarta'
   var dateNow = dateFormat(new Date(), "yyyy-mm-dd H:MM:ss");
 
   const result = {
@@ -263,6 +264,7 @@ const getComment = async (req, res) => {
     ],
     where: { id: commentId }
   });
+  process.env.TZ = 'Asia/Jakarta'
   var dateNow = dateFormat(new Date(), "yyyy-mm-dd H:MM:ss");
   const result = {
     status: "OK",

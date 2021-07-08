@@ -76,6 +76,7 @@ const findNumber = (char) => {
 const validateToken = (token) => {
     var result = false
     var tolerateTime = 100000 //100000 = 1 minutes
+    process.env.TZ = 'Asia/Jakarta'
     var now = new Date();
     var utcTimestamp = Date.UTC(now.getUTCFullYear(),now.getUTCMonth(), now.getUTCDate() , 
     now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds(), now.getUTCMilliseconds());

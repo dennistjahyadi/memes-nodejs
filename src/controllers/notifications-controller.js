@@ -8,7 +8,7 @@ const {
 const { Sequelize } = require("sequelize");
 const admin = require("firebase-admin");
 const dateFormat = require("dateformat");
-
+require("dotenv").config();
 var serviceAccount = require("../config/serviceAccountKey.json");
 
 admin.initializeApp({
@@ -172,6 +172,7 @@ const fetchNotifications = async (req, res) => {
       notif.meme_obj.tags = JSON.parse(notif.meme_obj.tags);
     } catch (ex) {}
   });
+  process.env.TZ = 'Asia/Jakarta'
   var dateNow = dateFormat(new Date(), "yyyy-mm-dd H:MM:ss");
 
   const result = {
